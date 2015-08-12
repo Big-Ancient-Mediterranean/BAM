@@ -1,0 +1,1564 @@
+<?xml version="2.0" encoding="UTF-8"?>
+<!-- Copyright ©2015 Ryan Horne -->
+<!-- Main html file for the TerraBiblica -->
+<!-- Source Code released under GPLv2 -->
+<!-- Map data produced by AWMC released under CC BY-NC 3.0 -->
+<!-- Author(s): Ryan Horne -->
+<!-- Version: 0.1 Alpha 6 August, 2015 -->
+<html>
+<head>
+<link rel="shortcut icon" href="favicon.ico" />
+<title><?php echo htmlspecialchars($applicationTitle);?></title>
+<script src="/includes/OpenLayers/OpenLayers.js" type="text/javascript"></script>
+<script src="/includes/extjs/3.4.0/adapter/ext/ext-base.js" type="text/javascript"></script>
+<script src="/includes/extjs/3.4.0/ext-all.js"  type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="/includes/extjs/3.4.0/resources/css/ext-all.css"></link>
+<script src="/includes/geoext/1.1/lib/GeoExt.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="/includes/geoext/1.1/resources/css/geoext-all-debug.css"></link>
+<!-- J query below -->
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script  src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script type="text/javascript" src="http://www.awmc.unc.edu/includes/sorttable.js"></script> 
+<!-- All of the rules for the various feature types are in the below file -->
+<link rel="stylesheet" href="css/main.css" type="text/css"></link>
+<!-- BAM files -->
+<script type="text/javascript" src="js/BAM-layers.js"></script>
+<script type="text/javascript" src="js/BAM-text.js"></script>
+<script type="text/javascript" src="js/BAM-functions.js"></script>
+<script type="text/javascript" src="js/feature_rules.js"></script>
+
+<!-- sigmajs stuff. There may be a redundent jqery load - will check it out later -->
+
+  <script src="js/jquery/jquery.min.js" type="text/javascript"></script>
+  <script src="js/sigma/sigma.min.js" type="text/javascript" language="javascript"></script>
+    <script src="js/sigma/sigma.parseJson.js" type="text/javascript" language="javascript"></script>
+  <script src="js/fancybox/jquery.fancybox.pack.js" type="text/javascript" language="javascript"></script>
+  <script src="js/main.js" type="text/javascript" language="javascript"></script>
+
+  <link rel="stylesheet" type="text/css" href="js/fancybox/jquery.fancybox.css"/>
+  <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
+  <link rel="stylesheet" media="screen and (max-height: 770px)" href="css/tablet.css" />
+
+<!-- datatables. Change to wherever it is installed on your system -->
+
+<script type="text/javascript" src="/includes/jquery.dataTables.js"></script> 
+<link rel="stylesheet" type="text/css" href="/includes/images/demo_table.css"></link>
+
+
+<!-- application specific configs, if any-->
+<?php
+/* for the functions */
+
+if (strpos($functionsForApplication,'.js') !== false) {
+    echo "<script type=\"text/javascript\" src=\"",$functionsForApplication,"\"></script>";
+}
+
+/* for the layers */
+
+if (strpos($layersForApplication,'.js') !== false) {
+    echo "<script type=\"text/javascript\" src=\"",$layersForApplication,"\"></script>";
+}
+
+/* for the texts */
+
+if (strpos($textsForApplication,'.js') !== false) {
+    echo "<script type=\"text/javascript\" src=\"",$textsForApplication,"\"></script>";
+}
+
+/* for the featurerules */
+
+
+if (strpos($featurerulesforApplication,'.js') !== false) {
+    echo "<script type=\"text/javascript\" src=\"",$featurerulesforApplication,"\"></script>";
+}
+ ?>
+
+</head>
+<body>
+<div style="z-index:9995" id ='gazetteerBox' class='nonMapOverlay'>
+   <div id ='gazetteerBoxContent'></div>
+</div>
+<div style="z-index:9995" id ='legendBox' class='nonMapOverlay'>
+   <div id ='legendBoxContent'></div>
+</div>
+<div style="z-index:9997" id ='searchFeatureBox' class='nonMapOverlay'>
+   <div id ='searchFeatureBoxContent'></div>
+</div>
+<div style="z-index:9996" id ='mapInfoBox' class='nonMapOverlay'>
+   <div id ='mapInfoBoxContent'></div>
+</div>
+<div id="mainTbibPage">
+   <div id="textTitle" class = "textTitle">
+      <center>
+      <b><a href="https://bigancientmediterranean.wordpress.com/" target="_blank">Terra Biblica</a></b>
+   	  </center>	
+   </div>
+   <center  style=" clear: left;"><img id="allSearch" src="images/search2.png" alt="help" height="18" width="18" style="cursor: pointer; cursor: hand; ">&nbsp;&nbsp;&nbsp;<img id="allQuestion" src="images/question3.png" alt="help" height="18" width="18" style="cursor: pointer; cursor: hand; "></center>
+   <br />
+   <div id = "mainLeft" class = "mainLeft">
+      <center><b> Text from the <a href="http://www.perseus.tufts.edu/hopper/" target="_blank">Perseus Digital Library</a></b></center>
+      <br /><img id='perseusAllBack' class ='mainNavButton' src="images/bullet_arrow_left_2.png" alt="left full move" style="cursor: pointer; cursor: hand;">&nbsp;&nbsp;<img id='perseusOneBack' class ='mainNavButton' src="images/bullet_arrow_left.png" alt="left" style="cursor: pointer; cursor: hand;">&nbsp;&nbsp;<img id='perseusOneForward' class ='mainNavButton' src="images/bullet_arrow_right.png" alt="right" style="cursor: pointer; cursor: hand;">&nbsp;&nbsp;<img id='perseusAllForward' class ='mainNavButton' src="images/bullet_arrow_right_2.png" alt="right full move" style="cursor: pointer; cursor: hand;">
+      <br />
+      <div id="textcontainer" class = "textcontainer">
+      </div>
+      <div style="padding-left: 1%;padding-right: 1%;" id="socialNetContainer" class="socialNetContainer">
+         <div class="sigma-parent">
+            <div class="sigma-expand" id="sigma-canvas">
+               <div style="z-index:9994" id="attributepane">
+                  <div class="text">
+                     <div title="Close" class="left-close returntext">
+                        <div class="c cf">
+                           <span>Return to the full network</span>
+                        </div>
+                     </div>
+                     <div class="nodeattributes">
+                        <div class="name"></div>
+                        <div class="data"></div>
+                        <div class="p">Connections:</div>
+                        <div class="link">
+                           <ul>
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div id="mainpanel">
+            <div id="information">
+            </div>
+         </div>
+         <div id="zoom">
+            <div class="z" rel="in"></div>
+            <div class="z" rel="out"></div>
+            <div class="z" rel="center"></div>
+         </div>
+         <div id="copyright">
+            <a rel="license" href="http://creativecommons.org/licenses/by/4.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+            <a href="http://www.uiowa.edu/" target="_blank"><img alt="University of Iowa Logo" height="31" width="31" src="images/iowa.gif" /></a>
+            <a href="http://thestudio.uiowa.edu/_wp/" target="_blank"><img alt="Digital Library" height="31" width="124" src="images/iowaLib.png" /></a>
+            <a href="http://obermann.uiowa.edu/" target="_blank"><img alt="Obermann Logo" src="images/obermanSmall.png" /></a>
+            <a href="http://www.unc.edu/" target="_blank"><img alt="UNC Logo" src="images/uncLogo.png" /></a>
+            <a href="http://awmc.unc.edu/" target="_blank"><img alt="AWMC Logo" height="31" width="31" src="images/awmc_small.png" /></a>
+         </div>
+      </div>
+   </div>
+   <div id="mainRight" class="mainRight">
+      <div id="openMap" class="openMap"></div>
+      <div id="developercontainer"></div>
+   </div>
+</div>
+</div>
+</div>
+<script type='text/javascript'>
+
+/***********************************************************************************/
+/****************************** Configurations *************************************/
+/***********************************************************************************/
+
+// These are from the php config file
+
+var initialLat = <?php echo $initialLat; ?>;
+var initialLon = <?php echo $initialLon; ?>;
+var initialZoom = <?php echo $initialZoom; ?>;
+
+
+
+/***********************************************************************************/
+/*************************** html ***********************************************/
+/***********************************************************************************/
+
+
+$('#searchFeatureBoxContent').html(searchHtml);
+$('#mapInfoBoxContent').html(infoHtml);
+$('#legendBox').html(legendHtml);
+$('#gazetteerBox').html(gazetteerHtml);
+
+
+/***********************************************************************************/
+/************************Config Variables ******************************************/
+/***********************************************************************************/
+
+var values = {};
+var geojson_format = new OpenLayers.Format.GeoJSON();
+var perseusTextBaseUrl = "http://www.perseus.tufts.edu/hopper/CTS?request=GetPassage&urn=urn:cts:greekLit:tlg0031.tlg003.perseus-eng1:";
+var sigmaConcord ={};
+var tBibfeaturesOnMap =[];
+var activePerson = 'NONE';
+var popSnag;
+var activeChapter = 1;
+var activeVerse =1;
+/***********************************************************************************/
+
+
+/***********************************************************************************/
+/************************************** labels *************************************/
+/***********************************************************************************/
+//for Pleiades Names
+var contextBase = 
+{
+	foo: function(feature)
+	{
+		return feature.attributes.title;
+	}
+};
+ 
+  
+//our default style rule set
+var basePleiadesTemplate =
+{
+	//this is the label- must be changed to a different variable for different languages
+	label : "${foo}",
+	fontColor: "black",
+	fontSize: "10px",
+	fontFamily: "Tahoma",
+	fontWeight: "bold",
+	labelAlign: "ct",
+	//labelXOffset : 0,
+	labelYOffset : -4,
+	labelSelect : true,
+	labelOutlineColor: "white",
+	labelOutlineWidth: 2
+};
+
+
+styleMapBase = new OpenLayers.StyleMap( new OpenLayers.Style(basePleiadesTemplate, 
+	{
+		context:contextBase,
+		rules: rules
+	}
+));
+
+
+/***********************************************************************************/
+
+
+
+
+  
+  
+/***********************************************************************************/
+
+
+  
+//this keeps track of all of our features on the map by pid.
+
+var currentFeature = new OpenLayers.Feature.Vector(); 
+var featuresOnMap = [];
+
+
+/***********************************************************************************/
+
+
+/***********************************************************************************/
+
+
+//hide the overlays if the escape key is pressed 
+// perhaps this can be turned into a function based on an array  
+$( document ).on( 'keydown', function ( e )
+{
+    if ( e.keyCode === 27 )
+    { // ESC
+    	$('#searchFeatureBox').hide();
+    	$('#mapInfoBox').hide();
+    	$('#legendBox').hide();
+    	$('#gazetteerBox').hide();	
+    	
+    }
+});
+
+  
+// turn off the spinner when ajax has loaded 
+$.ajaxSetup(
+{
+	complete:function()
+	{
+		$("#loadSpinner").hide();
+    }
+});
+
+
+
+// kick off the main function 
+
+
+$(document).ready(function() 
+{
+
+
+/***********************************************************************************/
+/********************************* listeners ***************************************/
+/***********************************************************************************/
+
+$( "#allQuestion" ).click(function()
+{
+
+	$( "#searchFeatureBox" ).hide();
+	$('#legendBox').hide();
+	$('#mapInfoBox').toggle();
+  
+});
+
+
+$( "#allSearch" ).click(function()
+{
+	$( "#searchFeatureBox" ).toggle();
+	$('#legendBox').hide();
+	$('#mapInfoBox').hide();
+	launchSearch();
+
+  
+});
+
+
+
+$( "#perseusAllBack" ).click(function()
+{
+  getPerseusText('Lk 1:1',0);
+  activeChapter = 1;
+  activeVerse = 1;
+});
+
+
+$( "#perseusOneForward" ).click(function() {
+activeVerse++;
+  checkIfInText('Luke', activeChapter, activeVerse);
+});
+
+$( "#perseusAllForward" ).click(function() {
+  getPerseusText('Lk 24:53',0);
+    activeChapter = 24;
+  activeVerse = 53;
+});
+
+$( "#perseusOneBack" ).click(function()
+{
+
+checkIfInTextReverse('Luke', activeChapter, activeVerse)
+
+});
+
+
+
+/***********************************************************************************/
+
+
+
+/***********************************************************************************/
+/********************************* functions ***************************************/
+/***********************************************************************************/
+
+//For Grabbing the Perseus documents
+
+function getPerseusText(reference, isFirst)
+{
+var firstString = '<center><b>';
+if (isFirst ==0){
+firstString = firstString + reference;
+}
+else
+{
+	var lk1 ='Lk 1:1';
+	firstString = firstString + lk1;
+}
+firstString = firstString + '</b></center>';
+if (isFirst ==0){
+
+reference = reference.replace('Lk ','');
+reference = reference.replace(':','.');
+var finalPerseusUrl = perseusTextBaseUrl + reference;
+}
+else
+{
+	finalPerseusUrl = 'http://www.perseus.tufts.edu/hopper/CTS?request=GetPassage&urn=urn:cts:greekLit:tlg0031.tlg003.perseus-eng1:1.1';
+}
+$.ajax({
+    type: "GET",
+    url: finalPerseusUrl,
+    dataType: "xml",
+    success: function(xml) {
+    
+// var endString =  '';
+		
+//var middleString = (new XMLSerializer()).serializeToString(xml);
+
+var x=xml.getElementsByTagName("p")[0].childNodes[0];
+//alert ();
+
+
+
+
+var finalString = firstString + x.nodeValue;
+//+ endString;
+
+$("#textcontainer").html(finalString);
+
+
+    }
+});
+}
+
+
+function checkIfInText(textname, chapter, verse)
+{
+
+switch (textname)
+{
+	case 'Luke':
+	switch (chapter)
+	{
+		case 1:
+		if (verse > 80)
+			{
+				chapter = 2;
+				verse = 1;
+			}
+	break;
+		case 2:
+		if (verse > 52)
+			{
+				chapter = 3;
+				verse = 1;
+			}
+break;
+		case 3:
+		if (verse > 38)
+			{
+				chapter = 4;
+				verse = 1;
+			}
+	break;
+		case 4:
+		if (verse > 44)
+			{
+				chapter = 5;
+				verse = 1;
+			}
+	break;	
+	 	
+		case 5:
+		if (verse > 39)
+			{
+				chapter = 6;
+				verse = 1;
+			}
+		break;	
+	
+			case 6:
+		if (verse > 49)
+			{
+				chapter = 7;
+				verse = 1;
+			}
+		break;	
+	
+				case 7:
+		if (verse > 50)
+			{
+				chapter = 8;
+				verse = 1;
+			}
+			break;	
+			
+						case 8:
+		if (verse > 56)
+			{
+				chapter = 9;
+				verse = 1;
+			}
+			break;	
+			
+		case 9:
+		if (verse > 62)
+			{
+				chapter = 10;
+				verse = 1;
+			}
+			break;	
+ 	
+ 		case 10:
+		if (verse > 42)
+			{
+				chapter = 11;
+				verse = 1;
+			}
+			break;
+ 
+ 		case 11:
+		if (verse > 54)
+			{
+				chapter = 12;
+				verse = 1;
+			}
+			break; 	
+			
+ 		case 12:
+		if (verse > 59)
+			{
+				chapter = 13;
+				verse = 1;
+			}
+			break; 					
+ 	
+ 		case 13:
+		if (verse > 35)
+			{
+				chapter = 14;
+				verse = 1;
+			}
+			break;
+
+	case 14:
+		if (verse > 35)
+			{
+				chapter = 15;
+				verse = 1;
+			}
+			break;
+	
+		case 15:
+		if (verse > 32)
+			{
+				chapter = 16;
+				verse = 1;
+			}
+			break;
+	
+	case 16:
+		if (verse > 31)
+			{
+				chapter = 17;
+				verse = 1;
+			}
+			break;	
+
+	case 17:
+		if (verse > 37)
+			{
+				chapter = 18;
+				verse = 1;
+			}
+			break;	
+
+	case 18:
+		if (verse > 43)
+			{
+				chapter = 19;
+				verse = 1;
+			}
+			break;				
+
+	case 19:
+		if (verse > 48)
+			{
+				chapter = 20;
+				verse = 1;
+			}
+			break;	
+			
+	case 20:
+		if (verse > 47)
+			{
+				chapter = 21;
+				verse = 1;
+			}
+			break;										
+
+	case 21:
+		if (verse > 38)
+			{
+				chapter = 22;
+				verse = 1;
+			}
+			break;	
+
+	case 22:
+		if (verse > 71)
+			{
+				chapter = 23;
+				verse = 1;
+			}
+			break;
+
+	case 23:
+		if (verse > 56)
+			{
+				chapter = 24;
+				verse = 1;
+			}
+			break;		
+			
+				case 24:
+		if (verse > 53)
+			{
+				chapter = 24;
+				verse = 53;
+			}
+			break;			
+	
+	}
+	activeChapter = chapter;
+	activeVerse = verse;
+	var reference ='Lk '+ chapter + ':' +verse;
+	getPerseusText(reference,0);
+
+	break;
+}
+}
+
+
+function checkIfInTextReverse(textname, chapter, verse)
+{
+/*this is ugly. For the demo this is hardcoded - for the finished version
+it will be a config file and grabbed from the server */
+	activeVerse--;
+	var chapter = activeChapter;
+	var verse = activeVerse;
+	
+	switch (textname)
+{
+	case 'Luke':
+	if (activeVerse == 0)
+	{
+	
+		if (activeChapter > 1)
+		{
+			switch (activeChapter)
+			{
+				case 2:
+				chapter = 1;
+				verse = 80;
+				break;
+				
+				case 3:
+				chapter = 2;
+				verse = 52;
+				break;
+		
+				case 4:
+				chapter = 3;
+				verse = 38;
+				break;
+				
+				case 5:
+				chapter = 4;
+				verse = 44;
+				break;	
+	 	
+				case 6:
+				chapter = 5;
+				verse = 39;
+				break;	
+	
+				case 7:
+				chapter = 6;
+				verse = 49;
+				break;	
+	
+				case 8:
+				chapter = 7;
+				verse = 50;
+				break;	
+			
+				case 9:
+				chapter = 8;
+				verse = 56;
+				break;	
+			
+				case 10:
+				chapter = 9;
+				verse = 62;
+				break;	
+ 	
+ 				case 11:
+				chapter = 10;
+				verse = 42;
+				break;
+ 
+ 				case 12:
+				chapter = 11;
+				verse = 54;
+				break; 	
+			
+ 				case 13:
+				chapter = 12;
+				verse = 59;
+				break; 					
+ 	
+ 				case 14:
+				chapter = 13;
+				verse = 35;
+				break;
+
+				case 15:
+				chapter = 14;
+				verse = 35;
+				break;
+	
+				case 16:
+				chapter = 15;
+				verse = 32;
+				break;
+	
+				case 17:
+				chapter = 18;
+				verse = 31;
+				break;	
+	
+				case 18:
+				chapter = 19;
+				verse = 37;
+				break;	
+
+				case 19:
+				chapter = 18;
+				verse = 43;
+				break;				
+
+				case 20:
+				chapter = 19;
+				verse = 48;
+				break;	
+			
+				case 21:
+				chapter = 20;
+				verse = 47;
+				break;										
+
+				case 22:
+				chapter = 21;
+				verse = 38;
+				break;	
+
+				case 23:
+				chapter = 22;
+				verse = 71;
+				break;
+
+				case 24:
+				chapter = 23;
+				verse = 56;
+				break;
+				}
+			}
+			
+			//if these conditions are not met, reset to the first part of the text
+			else
+			{
+				chapter = 1;
+				verse = 1;
+			}
+		}
+		activeChapter = chapter;
+	activeVerse = verse;
+
+	var reference ='Lk '+ chapter + ':' +verse;
+	getPerseusText(reference,0);	
+		}
+		
+
+	}
+
+
+function personSearchForPopUp(activePerson, popSnag){
+
+if(activePerson !='NONE'){
+		$.ajax(
+		{
+			type:'GET',
+			data:{pid: activePerson},
+			url:'pNameFromNum.php',
+			success:function(pData)
+				{
+popSnag.fnFilter(pData);					
+				}
+			});
+			}
+}
+
+
+//going to extend the activate function from sigma.js to get when a node is activated
+
+//from http://coreymaynard.com/blog/extending-a-javascript-function/
+// Create an anonymous function to wrap everything in. This gets called immediately
+// on script load.
+(function() {
+    // Store a copy of the original function that will be extended so that we can call
+    // it in our new function
+    var old_nodeActive = nodeActive;
+
+    // Create a new function with the same name as the function we're extending.
+    // This overrides the existing one, so that all calls to that function call this
+    // new one instead
+    nodeActive = function() {
+
+        // Now, inside our extended function, we have the opportunity to take
+        // actions before calling the original:
+       
+       //we are going to build the map from the person_id that is called from the node
+       
+       tBibPersonConnections(arguments[0], tBibPeoplelayer);
+       activePerson = arguments[0];
+
+        // Call the original function, and pass the arguments to it, storing the return
+        // value in a new variable
+        var result = old_nodeActive.apply(this, arguments);
+
+        // Additional work can be done after the original function has run as well:
+
+        // Return the result of the original function, or return something different
+        // thanks to further processing that you may have done, to the original
+        // caller of the base function.
+        return result;
+    }
+})();
+
+
+function makeFirstMap(){
+
+$.ajax({
+						dataType: "json",
+						type:'GET',
+						data:{pid: "junk", start:"1"},
+						url:'tbib_mapmaker.php',
+						success:function(dataJson) {
+							for (var i = 0; i < dataJson.features.length; i++){
+							var untransformed_feature = geojson_format.read(dataJson, "FeatureCollection");
+							//for some reason this is going into an array. Going to hardcode for now
+							for (var j = 0; j < dataJson.features.length; j++){
+							if (tBibfeaturesOnMap.indexOf(untransformed_feature[j].attributes.pid) < 0){
+
+							
+							
+							           tBibPeoplelayer.addFeatures(untransformed_feature[j]);
+							           tBibfeaturesOnMap.push(untransformed_feature[j].attributes.pid);
+}
+}
+							tBibPeoplelayer.refresh({force:true}); 
+							}
+						},
+						error: function (xhr, ajaxOptions, thrownError) {
+							alert(xhr.responseText);
+						}
+					});
+					}
+
+function tBibPersonConnections(personNameChoice, tBibPeoplelayer)
+{
+		var dataStringForFeature ='pid=' +personNameChoice +'&start=0';
+		tBibPeoplelayer.destroyFeatures();
+		tBibfeaturesOnMap =[];
+
+		$.ajax({
+						dataType: "json",
+						type:'GET',
+						data:dataStringForFeature,
+						url:'tbib_mapmaker.php',
+						success:function(dataJson) {
+							for (var i = 0; i < dataJson.features.length; i++){
+							var untransformed_feature = geojson_format.read(dataJson, "FeatureCollection");
+							//for some reason this is going into an array. Going to hardcode for now
+							for (var j = 0; j < dataJson.features.length; j++){
+							if (tBibfeaturesOnMap.indexOf(untransformed_feature[j].attributes.pid) < 0){
+
+							
+							
+							           tBibPeoplelayer.addFeatures(untransformed_feature[j]);
+							           tBibfeaturesOnMap.push(untransformed_feature[j].attributes.pid);
+}
+}
+							tBibPeoplelayer.refresh({force:true}); 
+							}
+						},
+						error: function (xhr, ajaxOptions, thrownError) {
+							alert(xhr.responseText);
+						}
+					});
+
+}
+
+
+function loop_popups()
+{
+  for( var i = map.popups.length - 1; i >= 0; i-- ) 
+  { 
+    map.removePopup(map.popups[i]); 
+  }
+}
+
+
+function searchButtonClicked()
+{
+	$('#searchFeatureBox').toggle(); 
+	$('#mapInfoBox').hide();
+	$('#legendBox').hide();
+		launchSearch();
+ }
+
+
+function infoButtonClicked()
+{
+	$('#mapInfoBox').toggle();
+	$('#searchFeatureBox').hide();
+	$('#legendBox').hide();
+
+}
+
+ 
+function restoreZoomClicked()
+{
+	map.setCenter(new OpenLayers.LonLat(initialLat, initialLon),initialZoom); //zoom map to view
+	// also reset the places layer
+			tBibPeoplelayer.destroyFeatures();
+			activePerson = 'NONE';
+	tBibfeaturesOnMap =[];
+	makeFirstMap();
+
+}
+
+
+function createPopupVector(feature) 
+{
+	currentFeature = feature;
+	makePopupHtmlPleiadesFeature(feature);
+}
+
+
+function destroyPopupVector(feature) 
+{
+	currentFeature = feature;
+	if(currentFeature.popup)
+	{
+		map.removePopup(currentFeature.popup);
+        currentFeature.popup.destroy();
+        delete currentFeature.popup;
+    }
+}
+  
+  
+function makePopupHtmlPleiadesFeature(currentFeature)
+{
+
+var innerPopupHtml ='<div id="'+currentFeature.attributes.pid+'">' +
+					'<center><h1><b>'+ currentFeature.attributes.title + '</b></h1></center>' +
+					'<h3><center>'+ currentFeature.attributes.description + '</h3></center>' +
+					'<center><b><br /><br />Feature Types:</b> '+ currentFeature.attributes.featuretypes + '</center>' +
+					'<br /><center><table>' +
+						'<td><div id="popupZoomIn_'+currentFeature.attributes.pid+'" class="popupBaseButton popupZoomButton" title="Zoom to feature"></div></td>'+
+						'<td><a href="http://awmc.unc.edu/api/omnia/'+currentFeature.attributes.awmc_id+'" target="_blank"><div id="wmsAwmc'+currentFeature.attributes.awmc_id+'" class="popupBaseButton popupAwmcButton" title="View '+currentFeature.attributes.title+' as '+currentFeature.attributes.awmc_id+' at the AWMC API"></div></a></td>'+
+						'<td><a href="http://pleiades.stoa.org/places/'+currentFeature.attributes.pid+'" target="_blank"><div id="wmsPleiades'+currentFeature.attributes.pid+'" class="popupBaseButton popupPleiadesButton" title="View '+currentFeature.attributes.title+' as '+currentFeature.attributes.pid+' at Pleiades"></div></a></td>' +
+						'<td><a href="http://pelagios.dme.ait.ac.at/api/places/http%3A%2F%2Fpleiades.stoa.org%2Fplaces%2F'+currentFeature.attributes.pid+'" target="_blank"><div id="wmsAwmc'+currentFeature.attributes.pid+'" class="popupBaseButton popupPelagiosButton" title="View '+currentFeature.attributes.title+' at Pelagios"></div></a></td>' +
+						'<td><div id="trash_'+currentFeature.attributes.pid+'" class="popupBaseButton popupDeleteButton" title="Delete '+currentFeature.attributes.title+' from map"></div></td>' +
+					'</table>' +
+					'</center>' +
+					'</div>' +
+					'<br />' +
+					'<br />';
+					
+					loop_popups();
+					
+					var pleiadesPopup = new OpenLayers.Popup.FramedCloud("Feature Information",
+					currentFeature.geometry.getBounds().getCenterLonLat(),
+					null,innerPopupHtml,null,true);
+					
+					pleiadesPopup.maxSize = new OpenLayers.Size(250, 800);
+					
+					map.addPopup(pleiadesPopup);
+					
+					// delete button functionality for popup
+					$('.popupDeleteButton').click(function(event)
+					{
+						vlayer.removeFeatures(currentFeature);
+						map.removePopup(pleiadesPopup);
+						// now remove the entry from our list of features
+						var deleteIndex = featuresOnMap.indexOf(currentFeature.attributes.pid);
+						if (deleteIndex > -1) 
+						{
+							featuresOnMap.splice(deleteIndex, 1);
+						}
+					});	
+					
+					
+					// zoom button functionality for popup
+					$('.popupZoomButton').click(function(event)
+					{
+						var awmcInfoString = String(event.target.id);
+						awmcInfoString = awmcInfoString.replace("popupZoomIn_",""); 
+						var dataString = 'awmc_id='+awmcInfoString;
+						$.ajax(
+						{
+							type:'GET',
+							data:dataString,
+							url:'BAM_geom_wkt_zoom.php',
+							success:function(data2)
+							{
+								vectors.removeAllFeatures();
+								vectors.destroyFeatures();
+								var feature = new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT(data2));
+								/* transform the feature to web mercator */
+								var transformFeature = new OpenLayers.Feature.Vector(feature.geometry.transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
+																transformFeature.style = { visibility: 'hidden' };
+								vectors.addFeatures([transformFeature]);
+								var dataExtent = vectors.getDataExtent();
+								map.zoomToExtent(dataExtent);
+								loop_popups();
+							}
+						});
+					});
+}
+
+
+function createPopupSnagg(feature) 
+{
+	if (feature.layer.name !=" Custom Map Features")
+	{
+	currentFeature = feature;
+	makePopupHtmlSnaggFeature(feature);
+	}
+	else
+	{
+		createPopupVector(feature);
+	}
+}
+
+  
+function makePopupHtmlSnaggFeature(currentFeature)
+{
+
+var dataString = 'pid='+currentFeature.attributes.pid;
+var innerDataString = '';
+var snaggFeatureName ='';
+
+
+
+
+
+	$.ajax(
+		{
+			type:'GET',
+			data:dataString,
+			url:'BAM_inner_popup.php',
+			success:function(data2)
+			{
+			
+			
+			
+				$.ajax(
+		{
+			type:'GET',
+			data:dataString,
+			url:'BAM_pl_name.php',
+			success:function(data4)
+			{
+			snaggFeatureName = data4;
+
+			var innerPopupHtml ='<div id="'+currentFeature.attributes.pid+'">' +
+					'<center><h1><b>'+ snaggFeatureName + '</b></h1></center>' +
+					'<br /><center><table>' +
+						'<td><div id="popupZoomIn_'+currentFeature.attributes.pid+'" class="popupBaseButton popupZoomButton" title="Zoom to feature"></div></td>'+
+						'<td><a href="http://pleiades.stoa.org/places/'+currentFeature.attributes.pid+'" target="_blank"><div id="wmsPleiades'+currentFeature.attributes.pid+'" class="popupBaseButton popupPleiadesButton" title="View '+snaggFeatureName+' as '+currentFeature.attributes.pid+' at Pleiades"></div></a></td>' +
+						'<td><a href="http://pelagios.dme.ait.ac.at/api/places/http%3A%2F%2Fpleiades.stoa.org%2Fplaces%2F'+currentFeature.attributes.pid+'" target="_blank"><div id="wmsAwmc'+currentFeature.attributes.pid+'" class="popupBaseButton popupPelagiosButton" title="View '+snaggFeatureName+' at Pelagios"></div></a></td>' +
+					'</table>' +
+					'<br /><center>' + data2 + '</center>'+
+					'</center>' +
+					'</div>' +
+					'<br />' +
+					'<br />';
+					
+					loop_popups();
+		
+		
+										
+					
+					var snaggPopup = new OpenLayers.Popup.FramedCloud("Feature Information",
+					currentFeature.geometry.getBounds().getCenterLonLat(),
+					null,innerPopupHtml,null,true);
+					
+					snaggPopup.maxSize = new OpenLayers.Size(700, 600);
+					
+					map.addPopup(snaggPopup);
+		popSnag = 					$('#popupSnagTable').dataTable(
+			{
+				"bAutoWidth": false,
+				"sPaginationType": "full_numbers"
+			});
+			
+			
+					
+	
+			
+			$('#popupSnagTable tbody').on( 'click', 'td', function () {
+      
+         var columnName = $('#popupSnagTable thead tr th').eq($(this).index()).html().trim();
+          if (columnName == 'Reference'){
+          
+          var ActiveRef = $(this).html().trim();
+          ActiveRef = ActiveRef.replace('Lk ','');
+			var ActiveRefSpilt = ActiveRef.split(":");
+          activeChapter = ActiveRefSpilt[0];
+          activeVerse = ActiveRefSpilt[1];
+              getPerseusText($(this).html().trim(), 0);
+        }
+        
+                  if ((columnName == 'Entity 1') || (columnName == 'Entity 2')){
+                  var personNameChoice = $(this).html().trim();
+                  
+                  var dataString = 'pid='+personNameChoice;
+
+	$.ajax(
+		{
+			type:'GET',
+			data:dataString,
+			url:'bamIdFromNum.php',
+			success:function(data2)
+				{
+				//from the sigma.js gephi instance
+					nodeActive(data2);
+				//now to add all of the places the entity is on the map. Searching by ID
+					tBibPersonConnections(data2, tBibPeoplelayer);
+	
+					
+				}
+			});
+                              
+}
+            });
+					
+					// delete button functionality for popup
+					$('.popupDeleteButton').click(function(event)
+					{
+						vlayer.removeFeatures(currentFeature);
+						map.removePopup(snaggPopup);
+						// now remove the entry from our list of features
+						var deleteIndex = featuresOnMap.indexOf(currentFeature.attributes.pid);
+						if (deleteIndex > -1) 
+						{
+							featuresOnMap.splice(deleteIndex, 1);
+						}
+					});	
+					
+					
+					// zoom button functionality for popup
+					$('.popupZoomButton').click(function(event)
+					{
+						var awmcInfoString = String(event.target.id);
+						awmcInfoString = awmcInfoString.replace("popupZoomIn_",""); 
+						var dataString = 'awmc_id='+awmcInfoString;
+						$.ajax(
+						{
+							type:'GET',
+							data:dataString,
+							url:'BAM_geom_wkt_zoom.php',
+							success:function(data2)
+							{
+								vectors.removeAllFeatures();
+								vectors.destroyFeatures();
+								var feature = new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT(data2));
+								/* transform the feature to web mercator */
+								var transformFeature = new OpenLayers.Feature.Vector(feature.geometry.transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
+								transformFeature.style = { visibility: 'hidden' };
+								vectors.addFeatures([transformFeature]);
+								var dataExtent = vectors.getDataExtent();
+								map.zoomToExtent(dataExtent);
+								loop_popups();
+							}
+						});
+					});
+			
+				//now if there is a selected individual, filter the table to show that
+	
+		personSearchForPopUp(activePerson, popSnag);
+		
+			}
+		});
+
+}
+});
+
+
+}
+
+
+function launchSearch()
+{
+	$("#loadSpinner").show();
+	var dataString='';
+	$.ajax(
+	{
+		type:'GET',
+		data:dataString,
+		url:'BAM-search.php',
+		success:function(data)
+		{
+			$('#searchContent').html(data);
+			$('#mainTable').dataTable(
+			{
+				"bAutoWidth": false,
+				"sPaginationType": "full_numbers"
+			});
+			
+			oTable =  $('#mainTable').dataTable();
+		
+					$('#mainTable tbody').on( 'click', 'td', function () {
+      
+         var columnName = $('#mainTable thead tr th').eq($(this).index()).html().trim();
+          if (columnName == 'Reference'){
+          
+          var ActiveRef = $(this).html().trim();
+          ActiveRef = ActiveRef.replace('Lk ','');
+			var ActiveRefSpilt = ActiveRef.split(":");
+          activeChapter = ActiveRefSpilt[0];
+          activeVerse = ActiveRefSpilt[1];
+              getPerseusText($(this).html().trim(), 0);
+        }
+        
+                  if ((columnName == 'Entity 1') || (columnName == 'Entity 2')){
+                  var personNameChoice = $(this).html().trim();
+                  
+                  var dataString = 'pid='+personNameChoice;
+
+	$.ajax(
+		{
+			type:'GET',
+			data:dataString,
+			url:'bamIdFromNum.php',
+			success:function(data2)
+				{
+				//from the sigma.js gephi instance
+					nodeActive(data2);
+				//now to add all of the places the entity is on the map. Searching by ID
+					tBibPersonConnections(data2, tBibPeoplelayer);
+	
+					
+				}
+			});
+                              
+}
+            });
+		
+		
+		
+		}
+	});
+}
+
+
+/***********************************************************************************/
+
+
+/***********************************************************************************/
+/*************************   Layers ************************************************/
+/***********************************************************************************/
+
+tBibPeoplelayer = new OpenLayers.Layer.Vector( " People Locations", {styleMap: iclStyleMap});
+
+
+vlayer = new OpenLayers.Layer.Vector( " Custom Map Features", {styleMap: styleMapBase} );
+
+
+var vectors = new OpenLayers.Layer.Vector(" Selected Feature", 
+{
+	projection: new OpenLayers.Projection("EPSG:4326"),
+	isBaseLayer: false,
+	displayInLayerSwitcher:false
+});
+
+
+// First set up the mapbox base
+var mapBoxBackground = new OpenLayers.Layer.XYZ(
+    " AWMC Background",
+    [
+        "http://a.tiles.mapbox.com/v3/isawnyu.map-knmctlkh/${z}/${x}/${y}.png",
+        "http://b.tiles.mapbox.com/v3/isawnyu.map-knmctlkh/${z}/${x}/${y}.png",
+        "http://c.tiles.mapbox.com/v3/isawnyu.map-knmctlkh/${z}/${x}/${y}.png",
+        "http://d.tiles.mapbox.com/v3/isawnyu.map-knmctlkh/${z}/${x}/${y}.png"
+    ], 
+    {
+        attribution: "Tiles &copy; <a href='http://mapbox.com/' target='_blank'>MapBox</a> | " + 
+            "Data &copy; <a href='http://www.openstreetmap.org/' target='_blank'>OpenStreetMap</a> and contributors, CC-BY-SA |"+ 
+            " Tiles and Data &copy; 2013 <a href='http://www.awmc.unc.edu' target='_blank'>AWMC</a>" + 
+            " <a href='http://creativecommons.org/licenses/by-nc/3.0/deed.en_US' target='_blank'>CC-BY-NC 3.0</a>",
+        sphericalMercator: true,
+        wrapDateLine: true,
+        transitionEffect: "resize",
+        buffer: 1,
+        numZoomLevels: 13
+    }
+);
+/***********************************************************************************/
+
+
+
+
+/***********************************************************************************/
+/***************************** Map Setup *******************************************/
+/***********************************************************************************/
+
+// now set up the map 
+var map = new OpenLayers.Map(
+{
+    div: "openMap",
+    projection: new OpenLayers.Projection("EPSG:3857"),
+    controls: [
+    	new OpenLayers.Control.Attribution(),
+        new OpenLayers.Control.Navigation(
+        {
+        	dragPanOptions:
+        	{
+                enableKinetic: true
+            }
+        }),
+        new OpenLayers.Control.Zoom(),
+        new OpenLayers.Control.LayerSwitcher(
+        {
+        	'ascending':false
+        })
+              ],
+    center: [3960966.8051816, 3808092.7486409],
+    zoom: 10
+});
+
+//add map layers
+
+map.addLayer(mapBoxBackground);
+map.addLayers(baseLayers);
+map.addLayers(displayLayers);
+map.addLayer(vlayer);
+map.addLayer(vectors);
+map.addLayer(tBibPeoplelayer);
+
+//from the layers file. Using this for the layer we want to get WMS info from
+map.addLayer(all_Pleiades_Features_wms);
+all_Pleiades_Features_wms.setVisibility(false);
+
+//final map setup after all the layers are loaded
+map.setCenter(new OpenLayers.LonLat(initialLat, initialLon),initialZoom); //zoom map to view
+
+
+/***********************************************************************************/
+
+
+/***********************************************************************************/
+/*********************** Map Controls **********************************************/
+/***********************************************************************************/
+
+var scaleline = new OpenLayers.Control.ScaleLine();
+map.addControl(scaleline);
+
+// overview map  
+var overview1 = new OpenLayers.Control.OverviewMap(
+{
+	maximized: false,
+	maximizeTitle: 'Show the overview map',
+	minimizeTitle: 'Hide the overview map'
+});
+
+map.addControl(overview1);
+
+
+// for getting information from the Peiades features and displaying them in a custom popup.
+info = new OpenLayers.Control.WMSGetFeatureInfo(
+{
+	url: awmcWmsUrl,
+	title: 'Identify features by clicking',
+	queryVisible: false,
+	layers: [all_Pleiades_Features_wms],
+	eventListeners: 
+	{
+		getfeatureinfo: function(event) 
+		{
+			//Remove all the popups
+			loop_popups();
+			//So we are not spinning on a null result
+			if(event.text.length > 0)
+			{
+				map.addPopup(new OpenLayers.Popup.FramedCloud("Feature Information",
+					map.getLonLatFromPixel(event.xy),
+					null,event.text,null,true));
+
+$('.popupPlusButton').click(function(event)
+				{
+					var pleaidesInfoString = String(event.target.id);
+					pleaidesInfoString = pleaidesInfoString.replace("popupPlus_",""); 					
+					//this function adds the new feature to the map
+					addNewGeoJsonFeatureWithId(pleaidesInfoString, vlayer);
+
+				});		
+					
+				$('.popupZoomButton').click(function(event)
+				{
+					var awmcInfoString = String(event.target.id);
+					awmcInfoString = awmcInfoString.replace("popupZoomIn_",""); 
+					var dataString = 'awmc_id='+awmcInfoString;
+					
+					$.ajax(
+					{
+						type:'GET',
+						data:dataString,
+						url:'BAM_geom_wkt_zoom.php',
+						success:function(data2)
+						{
+							vectors.removeAllFeatures();
+							vectors.destroyFeatures();
+							var feature = new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT(data2));
+							/* transform the feature to web mercator */
+							var transformFeature = new OpenLayers.Feature.Vector(feature.geometry.transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
+															transformFeature.style = { visibility: 'hidden' };
+
+							vectors.addFeatures([transformFeature]);
+							var dataExtent = vectors.getDataExtent();
+							map.zoomToExtent(dataExtent);
+							loop_popups();
+						}
+					});
+				});
+			}
+		}
+	}
+});
+
+//now to add the control and activate it
+map.addControl(info);
+info.deactivate();
+
+
+var snaggSelectControl = 
+{
+
+		snaggSelector: new OpenLayers.Control.SelectFeature([tBibPeoplelayer, vlayer], { onSelect: createPopupSnagg, onUnselect: destroyPopupVector })
+
+};
+
+map.addControl(snaggSelectControl['snaggSelector']);
+snaggSelectControl['snaggSelector'].activate();
+
+
+
+/***********************************************************************************/
+
+
+
+//zoom button, may be able to move or delete
+$(document).ready(function(){
+				$('.popupZoomButton').click(function(event)
+				{
+					var awmcInfoString = String(event.target.id);
+					awmcInfoString = awmcInfoString.replace("popupZoomIn_",""); 
+					var dataString = 'awmc_id='+awmcInfoString;
+					
+					$.ajax(
+					{
+						type:'GET',
+						data:dataString,
+						url:'BAM_geom_wkt_zoom.php',
+						success:function(data2)
+						{
+							vectors.removeAllFeatures();
+							vectors.destroyFeatures();
+							var feature = new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT(data2));
+							// transform the feature to web mercator */
+							var transformFeature = new OpenLayers.Feature.Vector(feature.geometry.transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
+															transformFeature.style = { visibility: 'hidden' };
+
+							vectors.addFeatures([transformFeature]);
+							var dataExtent = vectors.getDataExtent();
+							map.zoomToExtent(dataExtent);
+							loop_popups();
+						}
+					});
+				});
+				
+				 $("#editFormSubmitButton").click(function(){
+				 submitFeatureEditForm(currentFeature);
+    }); 
+
+				
+
+});
+
+
+
+/***********************************************************************************/
+/**************************** panels and buttons ***********************************/	
+/***********************************************************************************/
+
+var panel_type2 = new OpenLayers.Control.Panel(
+{
+	displayClass: 'Panel2'
+});
+
+
+
+map.addControl(panel_type2);
+
+
+var buttonsForPanels =[];
+
+var zoomRestoreButton = new OpenLayers.Control.Button(
+{
+	title:'Return to Original Zoom', 
+	displayClass: 'zoomButtonRestore', 
+	trigger: restoreZoomClicked
+});
+
+buttonsForPanels.push(zoomRestoreButton);
+
+panel_type2.addControls(buttonsForPanels);
+
+
+
+/* close the boxes */
+$('#searchCloseBox').click(function()
+{
+	$('#searchFeatureBox').hide();
+});
+    
+    
+$('#aboutCloseBox').click(function()
+{
+	$('#mapInfoBox').hide();
+});
+
+
+
+
+/***********************************************************************************/
+
+
+//This removes the wms info control from our hidden layer when the Pleiades mapbox layer is hidden
+
+map.events.register('changelayer', null, function(evt)
+{
+	if(evt.property === "visibility")
+	{
+		if( evt.layer.name ===" All Pleiades Features")
+		{
+			if (evt.layer.getVisibility() == false)
+			{
+				info.deactivate();
+        	}
+        	else
+        	{
+        	info.activate();
+        	}
+        }
+    }
+});
+
+
+
+
+//make the first map
+
+makeFirstMap();
+
+
+/*end of the main function */
+
+getPerseusText('nothing', 1);
+});
+
+</script>
+</body>
+</html>

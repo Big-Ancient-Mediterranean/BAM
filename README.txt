@@ -1,0 +1,2 @@
+These files form the core of BAM, A tool for the geospatial analysis, literary network visualization, and plot mapping of ancient texts. 
+All code is under GPL V.2, and all data is under CC BY 4.0. See the license directory for more information

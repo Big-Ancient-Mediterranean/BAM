@@ -1,20 +1,20 @@
 <?php
-   $PageTitle="Basic Map Example";
-   $NavBarBrand ="Basic Map: An Example</i>";
+   $PageTitle="Hierokles: Synekdemos";
+   $NavBarBrand ="Hierokles: <i>Synekdemos</i>";
    $NavBarImageLink='<a href="http://awmc.unc.edu" target="_blank">';
    //check to see if there are any parameters for the application
    if (isset($_GET['pidInput'])) {
  $zoomToFeature = $_GET['pidInput'];
 }
-  //these files contain all of the needed includes for a basic map with a database
+  
    include_once('../common-files/includes/BAM-header.php');
    include_once('../common-files/includes/BAM-map-headers.php');
    include_once('../common-files/includes/BAM-datatable-headers.php');
 
 ?>
 
-<!-- this is your stylesheet for any custom changes -->
-    <link rel="stylesheet" href="basic-map.css" type="text/css" />
+
+    <link rel="stylesheet" href="hiero.css" type="text/css" />
 
     </head>
 
@@ -29,8 +29,7 @@
             //this hides the tooltip so it is not hovering around
             $('.city-name').hide();
 
-//change this link to you application - anything following it will be assed as a pleiades location
-            var htmlLocation = 'http://link-to-your-application/';
+            var htmlLocation = 'http://awmc.unc.edu/awmc/applications/bam/modules/hierokles/';
 
 
             //restrict the interval to only numbers
@@ -38,14 +37,17 @@
                 this.value = this.value.replace(/[^0-9\.]/g, '');
             });
 
-//modify this as needed for your data
-
             var mainTable = '<table class="display" id="mainTable" border="1" cellpadding="2" cellspacing="4" summary="Feature List Table">';
             mainTable += "<thead>";
             //this will be hidden later
+            mainTable += "<th>ID</th>";
             mainTable += "<th>Pleaides ID</th>";
             mainTable += "<th>Title</th>";
             mainTable += '<th>Links</th>';
+            mainTable += '<th>Diocese</th>';
+            mainTable += '<th>Province</th>';
+            mainTable += '<th>Hierokles Reference</th>';
+            mainTable += '<th>Other References</th>';
             mainTable += "</tr></thead>";
             mainTable += "<tbody>";
 
@@ -67,20 +69,20 @@
 
             //using d3 here as it is used extensively in BAM. This could be replaced by another, lighter library, but I a, keeping it to allow for more modular access if other parts of BAM are needed
 
-            d3.json("basic-map.json", function(error, json) {
+            d3.json("hiero-full.json", function(error, json) {
 
                 var nodes = json.nodes.map(function(d) {
 
                     //will make an option to just pull in geojson if it is in that format - this pulls in data from Gephi, which is a central feature of other BAM components	
                     //pull out the geo-data and make some geojson
-                    if ((d.attributes.type == 'place') && (isNaN(d.attributes.lat) == false)) {
+                    if ((d.attributes.type == 'place') && (isNaN(d.attributes.x) == false)) {
 
                         //this should be some kind of config, but different projects may wish to show different data
                         var geojsonFeature = {
                             'type': 'Feature',
                             'properties': {
-                                'id': d.attributes.pleiades_id,
-                                'label': d.label,
+                                'id': d.id,
+                                'label': d.attributes.title,
                                 'diocese': d.attributes.diocese,
                                 'province': d.attributes.province,
                                 'pageNum': d.attributes.honigmann_page_number,
@@ -90,7 +92,7 @@
                             },
                             'geometry': {
                                 'type': 'Point',
-                                'coordinates': [d.attributes.lon, d.attributes.lat]
+                                'coordinates': [d.attributes.x, d.attributes.y]
                             }
                         };
 
@@ -99,19 +101,38 @@
 
                     //add to datatables
                     mainTable += "<tr>";
+                    //hidden uid
+                    mainTable += "<td>";
+                    mainTable += d.attributes.uid;
+                    mainTable += "</td>";
                     //hidden pleiadesID
                     mainTable += "<td>";
-                    mainTable += d.attributes.pleiades_id;
+                    mainTable += d.id;
                     mainTable += "</td>";
                     //title
                     mainTable += "<td>";
-                    mainTable += d.label;
+                    mainTable += d.attributes.title;
                     mainTable += "</td>";
                     //for the external data links
                     mainTable += "<td>";
                     mainTable += '<a href="https://pleiades.stoa.org/places/' + d.id + '" target="_blank"><img src="../common-files/images/pleiades_icon.png"></a>&nbsp;&nbsp;<a href="http://pelagios.org/peripleo/pages/places/http%3A%2F%2Fpleiades.stoa.org%2Fplaces%2F' + d.id + '" target="_blank"><img src="../common-files/images/pelagios.png"></a>';
                     mainTable += "</td>";
-        
+                    //Diocese
+                    mainTable += "<td>";
+                    mainTable += d.attributes.diocese;
+                    mainTable += "</td>";
+                    //Province
+                    mainTable += "<td>";
+                    mainTable += d.attributes.province;
+                    mainTable += "</td>";
+                    //Hierokles Reference
+                    mainTable += "<td>";
+                    mainTable += d.attributes.hierokles_section_and_line_numbers;
+                    mainTable += "</td>";
+                    //external references
+                    mainTable += "<td>";
+                    mainTable += d.attributes.external_references;
+                    mainTable += "</td>";
                     mainTable += "</tr>";
 
                 })
@@ -171,6 +192,9 @@
                         "targets": [0],
                         "visible": false
                             //"searchable": false
+                    }, {
+                        "targets": [1],
+                        "visible": false
                     }],
                     buttons: [
                         'copy', 'csv', 'print'
@@ -181,7 +205,7 @@
                 $('#mainTable tbody').on('click', 'tr', function() {
                     var data = mainTableDataTable.row(this).data();
                     var result = $.grep(placesHolder, function(e) {
-                        return e.properties.id === data[0];
+                        return e.properties.uid === data[0];
                     });
                     //set zoom to choice
                     //right now hardwired for the first result, as UIDs are unique to this application. Could change this later.
@@ -192,7 +216,7 @@
                     main_locations.eachLayer(function(feature) { //geojson is the object which have your data
 
                         //need to turn this into a singular function to capture all the data
-                        if (feature.feature.properties.id === data[0]) { //insert the id in place of 'required-id'
+                        if (feature.feature.properties.uid === data[0]) { //insert the id in place of 'required-id'
 
                             makeBamPopup(feature.feature, map)
                             $("#leftTextPaneContent").html(htmlForBox);
@@ -205,7 +229,7 @@
 
                 $('#map').on('click', '.popupZoomButton', function(e) {
                     var result = $.grep(placesHolder, function(e2) {
-                        return e2.properties.id === e.target.id;
+                        return e2.properties.uid === e.target.id;
                     });
                     //set zoom to choice
                     //right now hardwired for the first result, as UIDs are unique to this application. Could change this later.
@@ -318,14 +342,19 @@
                 $('#infoBox').hide();
             });
 
-//modify the information in the popup as needed
+
             function makeBamPopup(feature, map) {
 
                 var htmlForBox = '<center><table><tr>';
-                htmlForBox = htmlForBox + '<td><div id="' + feature.properties.id + '" class="popupZoomButton popupBaseButton"></div></a></td>';
+                htmlForBox = htmlForBox + '<td><div id="' + feature.properties.uid + '" class="popupZoomButton popupBaseButton"></div></a></td>';
                 htmlForBox = htmlForBox + '<td><a href="http://pleiades.stoa.org/places/' + feature.properties.id + '" target="_blank"><div id="wmsPleiades' + feature.properties.id + '" class="popupBaseButton popupPleiadesButton" title="View ' + feature.properties.label + ' as ' + feature.properties.id + ' at Pleiades"></div></a></td>';
                 htmlForBox = htmlForBox + '<td><a href="http://pelagios.org/peripleo/pages/places/http%3A%2F%2Fpleiades.stoa.org%2Fplaces%2F' + feature.properties.id + '" target="_blank"><div id="wmsAwmc' + feature.properties.id + '" class="popupBaseButton popupPelagiosButton" title="View ' + feature.properties.label + ' at Pelagios"></div></a></td></table></center>';
-                htmlForBox = htmlForBox + '<br /> Put more data, information, or whatever here';
+                htmlForBox = htmlForBox + '<br />Diocese: <b>' + feature.properties.diocese + '</b>';
+                htmlForBox = htmlForBox + '<br />Province: <b>' + feature.properties.province + '</b>';
+                htmlForBox = htmlForBox + '<br /><a href="http://www.worldcat.org/oclc/419736368" target="_blank">Honigmann</a> Page Number: <b>' + feature.properties.pageNum + '</b>';
+                htmlForBox = htmlForBox + '<br />Hierokles Reference: <b>' + feature.properties.sectionNum + '</b>';
+                htmlForBox = htmlForBox + '<br />Other References: <b>' + feature.properties.exRef + '</b>';
+
                 if (feature.properties.id != 0) {
                     htmlForBox = htmlForBox + '<br /><a href="' + htmlLocation + feature.properties.id + '" target="_blank">Permalink</a>';
                 }

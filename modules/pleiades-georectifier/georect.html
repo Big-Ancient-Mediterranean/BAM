@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	    <link rel="shortcut icon" href="../../images/favicon.ico" />
+    <title>BAM Georectifier</title>
+    <meta charset="utf-8" />
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="../../common-files/js/jquery.csv.js"></script>
+<link rel="stylesheet" href="../../common-files/css/main.css" type="text/css" />
+
+<body>
+
+    <div id='spinnerBox' class='nonMapOverlay'>
+        <div id='spinnerBoxContent'>
+            <center>
+                <h1>Rectifying Pleiades Data</h1> <br />
+                <img src="../../common-files/images/load.gif" alt="load spinner">
+            </center>
+        </div>
+    </div>
+
+<div id ='InfoBox' class='nonMapOverlay'>
+   <div id ='mapInfoBoxContent'></div>
+</div>
+
+
+      	  <div class="navbar">
+      <center>
+            <br />
+
+      <div class="navbar-brand">BAM Georectifier for Pleaides Data</div>
+               <br />
+
+   	  </center>	
+   </div>
+      <br />
+      <br />
+      <br />
+      <br />
+
+    <center><div class="navbar-brand" id="questionLauncher">?</div></center>
+
+   <br />
+
+
+
+
+    <input type="file" id="csvFileInput" onchange="handleFiles(this.files)" accept=".csv">
+    <div id="checkboxContainer">
+    <div id="checkboxes">
+    </div>
+        </div>
+    <input type="submit" id="submitToPHPButton" value='Submit' />
+    <div id="downloadField">
+    </div>
+    <script type="text/javascript">
+    //TO DO: Hide download link when choose file is pushed
+    //Lots of interface cleanup to do
+    //would be nice to see the data in a window before doewnloading
+    //would be nice to see the csv in a window before sending
+    //php status bar so the user knows what is going on?
+    //ensure that the new pleiades json is as responsive as the old
+    //possible offer kml format and csv as well?
+    
+    
+    
+        //some large variables here
+        var csvSelectedColumns = [];
+        var csv;
+        var result;
+        var csvInputList = [];
+        
+        $( "#target" ).click(function() {
+  alert( "Handler for .click() called." );
+});
+
+        //much of the file handling from http://mounirmesselmeni.github.io/2012/11/20/reading-csv-file-with-javascript-and-html5-file-api/
+
+        function handleFiles(files) {
+            // Check for the various File API support.
+            if (window.FileReader) {
+                // FileReader are supported.
+                getAsText(files[0]);
+            } else {
+                alert('FileReader are not supported in this browser.');
+            }
+        }
+
+        function getAsText(fileToRead) {
+            var reader = new FileReader();
+            // Read file into memory as UTF-8      
+            reader.readAsText(fileToRead);
+            // Handle errors load
+            reader.onload = loadHandler;
+            reader.onerror = errorHandler;
+        }
+
+        function loadHandler(event) {
+            csv = event.target.result;
+            processData(csv);
+        }
+
+        function processData(csv) {
+            result = $.csv.toObjects(csv);
+
+            csvTitles = Object.keys(result[0]);
+            
+            //nuke the previous boxes
+                       $('#checkboxes').remove();
+           $('<div id="checkboxes"> </div>').appendTo(checkboxContainer);
+
+            
+            $.each(csvTitles, function(key, value) {
+
+                addCheckbox(key, value);
+
+            });
+
+        }
+
+        function addCheckbox(key, name) {
+                //first thing is clear out the previous checkboxes
+           
+            var container = $('#checkboxes');
+
+            $('<input />', {
+                type: 'checkbox',
+                id: 'inputCB' + key,
+                value: name
+            }).appendTo(container);
+            $('<label />', {
+                'for': 'inputCB' + key,
+                text: name
+            }).appendTo(container);
+            //throw in a br for readability
+            $('<br />').appendTo(container);
+        }
+
+        function errorHandler(evt) {
+            if (evt.target.error.name == "NotReadableError") {
+                alert("Can not read file !");
+            }
+        }
+
+        function buildArrayForPleiadesParsing(csvSelectedColumns) {
+            console.log(result);
+            for (j = 0; j < result.length; j++) {
+                for (i = 0; i < csvSelectedColumns.length; i++) {
+                    var csvName = csvSelectedColumns[i];
+                    var dataForInput = result[j];
+                    //do not add blanks
+                    if (dataForInput[csvName] === "") {} else {
+
+                        csvInputList.push(dataForInput[csvName]);
+                    }
+                }
+
+            }
+            console.log(csvInputList);
+            //now submit the list to the php file
+
+            var jsonToPHP = JSON.stringify(csvInputList);
+            // console.log(jsonToPHP);
+            $('#spinnerBox').show();
+            $.ajax({
+                type: 'POST',
+                url: '"../../includes/listToPleiades.php',
+                data: {
+                    'plList': jsonToPHP
+                },
+                success: function(data) {
+                    $('#spinnerBox').hide();
+
+                    console.log(data);
+
+                    var blob = new Blob([data], {
+                        type: "application/json"
+                    });
+                    var url = URL.createObjectURL(blob);
+
+                    var a = document.createElement('a');
+                    a.download = "pleiades-places.json";
+                    a.href = url;
+                    a.textContent = "Download pleiades-places.json";
+
+                    document.getElementById('downloadField').appendChild(a);
+
+                }
+            });
+
+
+        }
+
+        //going to get the text value of the selected boxes
+        $('#submitToPHPButton').click(function() {
+            //need to go through the $(':checked') - will reformat for ease of coding
+            //to do: double check that something is checked before the submission button is pushed
+            //to do: csv and text sanitation. Even though we are not hitting a database, still need to sanatize inputs
+            var selectionsForPhp = $(':checked');
+            $.each(selectionsForPhp, function() {
+                csvSelectedColumns.push(this.value);
+            });
+            buildArrayForPleiadesParsing(csvSelectedColumns);
+        })
+    </script>
+    
+       
+      </div>
+
+</body>
+
+</html>

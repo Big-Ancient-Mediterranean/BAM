@@ -1,8 +1,0 @@
-DirectoryIndex launch.php
-RewriteEngine On
-RewriteRule ^jsonGet/([^/]+)/?$ launch.php?jsonGet=$1
-RewriteRule ^name/([^/]+)/?$ launch.php?name=$1
-RewriteRule ^pid/([^/]+)/?$ launch.php?pid=$1
-
-AddType application/json json
-AddType text/xml gexf

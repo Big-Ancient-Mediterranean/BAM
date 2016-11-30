@@ -1,0 +1,5 @@
+DirectoryIndex main.php
+RewriteEngine On
+RewriteCond %{SCRIPT_FILENAME} !-d  
+RewriteCond %{SCRIPT_FILENAME} !-f  
+RewriteRule (.*) main.php?pidInput=$1 [QSA]

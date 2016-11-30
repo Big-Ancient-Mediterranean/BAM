@@ -6,16 +6,12 @@
    if (isset($_GET['pidInput'])) {
  $zoomToFeature = $_GET['pidInput'];
 }
-  
    include_once('../common-files/includes/BAM-header.php');
    include_once('../common-files/includes/BAM-map-headers.php');
    include_once('../common-files/includes/BAM-datatable-headers.php');
 
 ?>
-
-
-    <link rel="stylesheet" href="hiero.css" type="text/css" />
-
+    <link rel="stylesheet" href="hierokles.css" type="text/css" />
     </head>
 
     <body>
@@ -31,11 +27,34 @@
 
             var htmlLocation = 'http://awmc.unc.edu/awmc/applications/bam/modules/hierokles/';
 
-
             //restrict the interval to only numbers
             $('.numbersOnly').keyup(function() {
                 this.value = this.value.replace(/[^0-9\.]/g, '');
             });
+            
+        	//style for the nodes. Can be expanded if needed
+            var dynamicPlacesStyle = {
+                radius: 3,
+                fillColor: "white",
+                color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.7
+            };
+
+            var dioStyle = {
+                "color": "#ff7800",
+                "weight": 5,
+                "opacity": 0.65,
+                "weight": 1.5
+            };
+
+            var provStyle = {
+                "color": "#9900ff",
+                "weight": 5,
+                "opacity": 0.65,
+                "weight": 1.5
+            };
 
             var mainTable = '<table class="display" id="mainTable" border="1" cellpadding="2" cellspacing="4" summary="Feature List Table">';
             mainTable += "<thead>";
@@ -56,20 +75,9 @@
             //create a popup which we will add things to later
             var popup = L.popup();
 
-            //style for the nodes. Can be expanded if needed
-            var dynamicPlacesStyle = {
-                radius: 3,
-                fillColor: "white",
-                color: "#000",
-                weight: 1,
-                opacity: 1,
-                fillOpacity: 0.7
-            };
-
-
             //using d3 here as it is used extensively in BAM. This could be replaced by another, lighter library, but I a, keeping it to allow for more modular access if other parts of BAM are needed
 
-            d3.json("hiero-full.json", function(error, json) {
+            d3.json("hierokles_places", function(error, json) {
 
                 var nodes = json.nodes.map(function(d) {
 
@@ -139,16 +147,52 @@
 
                 //as the layer we need depends on data to work, it has to fall under the loading mechanism for our csv, which is asynchronous. 
 
+                //using a plugin to load leaflet ajax. Nice, quick, and painless!
+                var dioLayer = new L.GeoJSON.AJAX("hierokles_dioceses.geojson", {
+                    style: dioStyle
+                });
+                dioLayer.addTo(map);
+
+                var provincesLayer = new L.GeoJSON.AJAX("hierokles_provinces.geojson", {
+                    style: provStyle
+                });
+                dioLayer.addTo(map);
+
+                //move our places layer to the top to allow tool tips and clicking
+                dioLayer.on('data:loaded', function() {
+                    main_locations.bringToFront();
+                });
+
+                provincesLayer.on('data:loaded', function() {
+                    main_locations.bringToFront();
+                });
+
+
+                //move our places layer to the top to allow tool tips and clicking when the layer switcher is used
+                map.on('overlayadd', function() {
+                    main_locations.bringToFront();
+
+                });
+
                 var main_locations = new L.geoJson(placesHolder, {
                     onEachFeature: onEachFeature,
                     pointToLayer: function(feature, latlng) {
                         return L.circleMarker(latlng, dynamicPlacesStyle);
                     }
-
                 });
 
                 main_locations.addTo(map);
                 map.fitBounds(main_locations.getBounds());
+
+                //overlay control to allow for user selection                
+                var overlayMaps = {
+                    "Places": main_locations,
+                    "Dioceses": dioLayer,
+                    "Provinces": provincesLayer
+                };
+
+                L.control.layers(null, overlayMaps).addTo(map);
+
 
                 //buttons here as some of the zoom functionality, etc depend on the data that we load
                 L.easyButton('<span class="easySearch">&curren;</span>', function() {
@@ -199,7 +243,6 @@
                     buttons: [
                         'copy', 'csv', 'print'
                     ]
-
                 });
 
                 $('#mainTable tbody').on('click', 'tr', function() {
@@ -207,10 +250,10 @@
                     var result = $.grep(placesHolder, function(e) {
                         return e.properties.uid === data[0];
                     });
+                  
                     //set zoom to choice
                     //right now hardwired for the first result, as UIDs are unique to this application. Could change this later.
                     map.setView([result[0].geometry.coordinates[1], result[0].geometry.coordinates[0]], 9);
-
 
                     //from http://stackoverflow.com/questions/31237459/how-to-open-leaflet-marker-popup-from-data-geojson-with-href
                     main_locations.eachLayer(function(feature) { //geojson is the object which have your data
@@ -223,8 +266,6 @@
                             //  feature.openPopup(); //open popup for matching ID
                         }
                     });
-
-
                 });
 
                 $('#map').on('click', '.popupZoomButton', function(e) {
@@ -254,7 +295,6 @@
                     }
                 });
 
-
                 try {
                     var zoomPleiadesID = "<?php if (isset($_GET['pidInput'])) {$zoomToFeature = $_GET['pidInput'];echo $zoomToFeature;}?>";
 
@@ -272,7 +312,6 @@
                                 makeBamPopup(feature.feature, map);
                             }
                         });
-
                     }
                 }
                 //quick and dirty way to keep moving if there is an issue
@@ -342,7 +381,6 @@
                 $('#infoBox').hide();
             });
 
-
             function makeBamPopup(feature, map) {
 
                 var htmlForBox = '<center><table><tr>';
@@ -361,10 +399,9 @@
 
                 var titleForBox = feature.properties.label;
                 htmlForBox = '<h1><center>' + titleForBox + '</h1></center>' + htmlForBox;
-
+                
                 var popupLatLng = L.latLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
-
-
+                
                 popup.setLatLng(popupLatLng);
                 popup.setContent(htmlForBox);
                 popup.update();

@@ -1,0 +1,15 @@
+{
+  "name": "leaflet-svg-shape-markers",
+  "version": "1.0.0",
+  "description": "Additional SVG markers for use in leaflet.js",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "author": "Rowan Winsemius",
+  "license": "MIT",
+  "devDependencies": {
+    "concatenate-files": "^0.1.1",
+    "minifier": "^0.7.1"
+  }
+}

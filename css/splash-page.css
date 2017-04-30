@@ -1,0 +1,166 @@
+/***********************************************************************************/
+/***********************************************************************************/
+/* (c) 2016 Ryan Horne
+// Title: splash-page.css
+// Purpose: Contains css styles used with BAM framework
+// Author(s): Ryan Horne
+// Version: 1.0 11 November 2015
+// Released under GPLv3 */
+/***********************************************************************************/
+/***********************************************************************************/
+
+
+body {    
+	font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: lighter;
+    background-color: white;
+}
+
+a {
+    color: #808080;
+    	font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: lighter;
+
+}
+
+
+a:link {
+    color: #808080;
+}
+
+a:visited {
+    color: #808080;
+}
+
+a:hover {
+    color: #cccccc;
+}
+       
+        
+.main-image {
+    max-width: 60%;
+    height: auto;
+}
+
+.navbar{
+  position: fixed;
+  top: 0;
+  left: 0;
+    background-color: #f5f5f5;
+    border-radius: 0;
+    width: 100%;
+        z-index: 99;
+
+}
+
+
+
+.navbar-brand a{
+    color: black;
+    font-family: Trajan, 'Crimson Text', serif;
+    font-size: 200%;
+    font-weight: lighter;
+    letter-spacing: 1.5px;
+    text-shadow: none;
+    text-transform: uppercase;
+        padding-left: 20px;
+        text-align: left;
+        text-decoration:none;
+        
+
+}
+
+.navbar-brand a:hover {
+    color: #cccccc;
+}
+
+
+.navbar-toggle .icon-bar {
+    background-color: white;
+}
+.navbar-nav {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.navbar-right{
+    color: black;
+        font-family: Trajan, 'Crimson Text', serif;
+            font-weight: lighter;
+    letter-spacing: 1.5px;
+    text-shadow: none;
+    position: absolute;
+    right: 20px;
+}
+
+
+.navbar-right ul li{
+  display: inline;
+}
+
+.navbar-right a:link {
+    color: black;
+}
+
+.navbar-right a:visited {
+    color: black;
+}
+
+.navbar-right a:hover {
+    color: #cccccc;
+}
+
+.middle-content {
+        text-align: center;
+}
+
+.landing-text {
+    padding-left:20%; 
+    padding-right:20%; 
+    float:left;
+}
+
+.thumbnail.pleiades-symmetrical img {
+    float:left;
+    height: 60px;
+    }
+
+.caption-text {
+ max-width: 160px;
+     padding-left: 10px; 
+
+     float:left;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    font-weight: lighter;
+    margin-right: 80px;
+
+    }
+    
+.caption-text a{
+    font-size: 14px;
+    font-weight: lighter;
+    }    
+    
+.footer {
+    background-color: #f5f5f5;
+    width: 100%;
+float:left;
+}
+
+.footer-text {
+ max-width: 160px;
+     padding-left: 10px; 
+
+     float:left;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 10px;
+    font-weight: lighter;
+    margin-right: 80px;
+}
+
+.footer-text a {
+    font-size: 10px;
+}

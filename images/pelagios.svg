@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.2"
+   width="508"
+   height="566"
+   id="svg2985"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="pelagios.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1105"
+     inkscape:window-height="698"
+     id="namedview3034"
+     showgrid="false"
+     inkscape:zoom="0.6590106"
+     inkscape:cx="193.30295"
+     inkscape:cy="356.61879"
+     inkscape:window-x="621"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g3096" />
+  <metadata
+     id="metadata2991">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs2989">
+    <clipPath
+       id="clipPath3100"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         id="path3102"
+         d="m 0.06,0 423.754,0 0,157.457 -423.754,0 L 0.06,0 z" />
+    </clipPath>
+    <clipPath
+       id="clipPath3090"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         id="path3092"
+         d="M 0,0 424,0 424,158 0,158 0,0 z" />
+    </clipPath>
+  </defs>
+  <text
+     x="46.238438"
+     y="298.88223"
+     transform="scale(1.3112514,0.76263029)"
+     id="text3014"
+     xml:space="preserve"
+     style="font-size:304.81210327px;font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial Black;-inkscape-font-specification:'Arial Black, Heavy'"
+     sodipodi:linespacing="125%"><tspan
+       x="46.238438"
+       y="298.88223"
+       id="tspan3016" /></text>
+  <flowRoot
+     transform="matrix(33.406131,0,0,34.837552,-2859.8411,-4300.5428)"
+     id="flowRoot3018"
+     xml:space="preserve"
+     style="font-size:16px;font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial Black;-inkscape-font-specification:'Arial Black, Heavy'"><flowRegion
+       id="flowRegion3020"><rect
+         width="382.88235"
+         height="354.71042"
+         x="87.07692"
+         y="122.93213"
+         id="rect3022" /></flowRegion><flowPara
+       id="flowPara3028" /></flowRoot>  <g
+     transform="matrix(1.25,0,0,-1.25,352.67124,350.30322)"
+     inkscape:label="Pelagios logo paths_cmyk"
+     id="g3082">
+    <g
+       id="g3084" />
+    <g
+       id="g3096">
+      <g
+         clip-path="url(#clipPath3100)"
+         id="g3098"
+         transform="matrix(2.6778064,0,0,2.6778064,-270.35207,-174.33725)">
+        <path
+           id="path3104"
+           style="fill:none;stroke:#4299da;stroke-width:2.66499996;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           d="M 98.31,150.666 C 62.698,165.6 21.724,148.836 6.79,113.224 -8.142,77.612 8.621,36.638 44.232,21.704 c 35.612,-14.933 76.586,1.831 91.519,37.442 14.934,35.613 -1.83,76.587 -37.441,91.52 z"
+           inkscape:connector-curvature="0" />
+        <path
+           id="path3106"
+           style="fill:none;stroke:#4299da;stroke-width:1.33099997;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           d="M 49.634,33.254 44.857,21.637 m 53.078,129.096 -4.776,-11.617 m 31.168,-74.694 11.617,-4.776 M 6.847,112.723 18.464,107.947 M 124.195,64.475 93.104,138.984 18.596,107.893 49.687,33.384 124.195,64.475 z m -52.9,66.054 -0.004,25.701 M 40.751,116.462 22.08,135.368 m 98.502,0.132 -17.848,-18.001 m -75.572,-31.338 -25.309,0 m 122.23,22.008 -74.671,30.701 -30.7,-74.67 74.671,-30.701 30.7,74.67 z M 93.435,33.367 98.272,21.775 M 44.519,150.592 49.356,139 m 74.857,-30.776 11.592,4.837 M 6.988,59.308 18.58,64.145 m 52.871,-21.051 0,-26.918 m 49.26,20.822 -18.671,18.907 M 40.454,54.708 22.212,36.869 m 118.839,49.293 -25.309,0 m -97.26,21.452 3.598,27.755 M 18.482,107.614 2.021,86.027 M 18.58,64.144 2.02,86.027 M 18.58,64.144 22.21,36.869 M 49.019,33.659 22.21,36.868 M 49.019,33.659 71.668,16.534 M 93.435,33.368 71.668,16.534 m 21.767,16.834 27.162,3.905 m 3.324,26.535 -3.324,-26.534 m 3.324,26.534 16.182,22.256 m -15.891,22.159 15.891,-22.159 m -15.891,22.159 -3.63,27.277 m -26.924,3.484 26.923,-3.483 m -26.923,3.483 -22.535,16.851 M 49.761,138.803 71.123,155.834 M 49.761,138.803 22.08,135.369"
+           inkscape:connector-curvature="0" />
+      </g>
+    </g>
+  </g>
+</svg>

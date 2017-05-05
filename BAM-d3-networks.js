@@ -515,7 +515,6 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
         else {
             headlineHtml = headlineHtml + '<br/>';
         }
-        //domLocation.headlineID $('#' + id)
         $('#' + domLocation.headlineID).html(headlineHtml);
 
         if (d3NetworksNodeConfigHolder.moreInformationDisplayAttributes) {
@@ -730,9 +729,11 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
     function createHtmlFromD3Attributes(d, data) {
         var attributesHtml = '';
         for (var i = 0; i < data.length; i++) {
+        if (typeof(getD3AttributeValueFromConfig(d, data[i])) !== 'undefined') {
             attributesHtml = attributesHtml + '<br />';
             attributesHtml = attributesHtml + data[i].attributeTitle;
             attributesHtml = attributesHtml + getD3AttributeValueFromConfig(d, data[i]);
+            }
         }
         return attributesHtml;
 

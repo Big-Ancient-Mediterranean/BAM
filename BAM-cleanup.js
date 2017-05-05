@@ -37,3 +37,12 @@ $(document).keyup(function(e) {
                         }
                     }
                 }
+                
+console.log(bamConfigJson.bamMoreInfoPanel.panelToggleButton);
+$('#'+ bamConfigJson.bamMoreInfoPanel.panelToggleButton).click(function() {
+
+
+informationToggle = informationPaneToggle(informationToggle, bamConfigJson.bamMoreInfoPanel.panelID, bamConfigJson.bamMoreInfoPanel.panelToggleButton);
+
+
+});

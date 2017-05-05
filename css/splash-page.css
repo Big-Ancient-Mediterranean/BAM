@@ -93,6 +93,7 @@ a:hover {
     text-shadow: none;
     position: absolute;
     right: 20px;
+    top: 5px;
 }
 
 
@@ -114,6 +115,7 @@ a:hover {
 
 .middle-content {
         text-align: center;
+            overflow: scroll;
 }
 
 .landing-text {
@@ -123,6 +125,10 @@ a:hover {
 }
 
 .thumbnail.pleiades-symmetrical img {
+    float:left;
+    height: 60px;
+    }
+.navbarImage{
     float:left;
     height: 60px;
     }
@@ -147,7 +153,8 @@ a:hover {
 .footer {
     background-color: #f5f5f5;
     width: 100%;
-float:left;
+position: fixed;  
+bottom: 0;
 }
 
 .footer-text {

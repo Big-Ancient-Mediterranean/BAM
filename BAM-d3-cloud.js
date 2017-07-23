@@ -35,18 +35,16 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
 //load the nodes
 
 
-console.log(d3NetworksNodeConfigHolder.cloudAttributes);
 //d3NetworksNodeConfigHolder.cloudAttributes
 
     for (var i = 0; i < graph.nodes.length; i++) {
-        sortable.push([graph.nodes[i].label, (graph.nodes[i].attributes['In-Degree'])]);
+        sortable.push([graph.nodes[i].label, (parseInt(graph.nodes[i].attributes['In-Degree']) * 10)]);
     }
 
     sortable.sort(function(a, b) {
         return b[1] - a[1];
     });
     
-    console.log(sortable);
     
 	//+1 due to the numbering of arrays
     var finalTextArray = sortable.slice(0, (d3NetworksNodeConfigHolder.cloudCount + 1));
@@ -63,7 +61,7 @@ console.log(d3NetworksNodeConfigHolder.cloudAttributes);
         .domain([0, d3.max(word_entries, function(d) {
             return d.value;
         })])
-        .range([10, 100]);
+        .range([1, 200]);
 
     d3.layout.cloud().size([width, height])
         //MAKECONFIG

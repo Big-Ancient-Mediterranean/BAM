@@ -24,6 +24,14 @@ body {
       width:7px;
     }
     
+    
+.brandLeftIcon {
+      height: 25px;
+      width:25px;
+
+
+}
+    
 .popupPleiadesButton {
     background-image: url(images/pleiades_icon.png);
 }

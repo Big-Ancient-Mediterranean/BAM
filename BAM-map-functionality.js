@@ -7,7 +7,7 @@
             });
 
             //zoom to map state
-            setInitialMapState(map, bamConfigJson.bamMapSetViewX, bamConfigJson.bamMapSetViewY, bamConfigJson.bamMapSetViewZoom);
+            setInitialMapState(map, bamConfigJson.bamMapConfig.MapSetViewX, bamConfigJson.bamMapConfig.MapSetViewY, bamConfigJson.bamMapConfig.MapSetViewZoom);
 
 			//set map controls
 
@@ -30,7 +30,7 @@
                     stateName: 'get-center',
                     onClick: function(button, map) {
                         //fires our function
-                        setInitialMapState(map, bamConfigJson.bamMapSetViewX, bamConfigJson.bamMapSetViewY, bamConfigJson.bamMapSetViewZoom);
+                        setInitialMapState(map, bamConfigJson.bamMapConfig.MapSetViewX, bamConfigJson.bamMapConfig.MapSetViewY, bamConfigJson.bamMapConfig.MapSetViewZoom);
                     },
                     title: 'Return to original zoom',
                     icon: '<span class="restoreZoom">&curren;</span>'

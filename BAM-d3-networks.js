@@ -276,9 +276,9 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
     d3NetworkSvg.selectAll("line").each(function(d2, i) {
         var tableDataHolder = {};
         //NEED TO MAKE THIS CONFIGURABLE;
-        tableDataHolder.sourceTitle = d2.source.attributes.title;
+        tableDataHolder.sourceTitle = d2.source.label;
         tableDataHolder.sourceIndex = d2.source.index;
-        tableDataHolder.targetTitle = d2.target.attributes.title;
+        tableDataHolder.targetTitle = d2.target.label;
         tableDataHolder.targetIndex = d2.target.index;
         d3NetworksConnectionsFullTableHolder.push(tableDataHolder);
     });

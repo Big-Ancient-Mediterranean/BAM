@@ -23,7 +23,7 @@
                     
                     var topSlideToggle = true;
                     
-                    $( "#timelineHolder" ).append('<div id="btn-top-toggle"><img src="../images/open-iconic/clock.svg" class="topToggle" alt="clock"></div>');
+                    $( "#timelineHolder" ).append('<div id="btn-top-toggle"><img src="../BAM/images/open-iconic/clock.svg" class="topToggle" alt="clock"></div>');
 
 
 $("#btn-top-toggle").click(function() {

@@ -432,16 +432,16 @@ function timeline(domElement) {
 //adding http://bl.ocks.org/timelyportfolio/5c136de85de1c2abb6fc here. Will need to cleanup the code location later            
 //for changing the brush
 
+
  $('#timeLineFire').click(function() {
                 
-drawBrush($('#timeStart').val(), $('#timeEnd').val());
+drawBrush(brush, $('#timeStart').val(), $('#timeEnd').val());
 
                 });
 
- function drawBrush(start, end) {      
+ function drawBrush(brush, start, end) {      
       
       //change input to dates
-      
       
       var startDate = new Date(start,0,1);
       startDate.setFullYear(start);
@@ -449,18 +449,31 @@ drawBrush($('#timeStart').val(), $('#timeEnd').val());
 	var endDate = new Date(end,11,31);
 	endDate.setFullYear(end);
 
+console.log(startDate.getFullYear());
+console.log(endDate.getFullYear());
 
 //brush for start and end of year
-    brush.extent([startDate, endDate])
+//    brush.extent([startDate, endDate]);
 
-    // now draw the brush to match our extent
+  /*  // now draw the brush to match our extent
     // use transition to slow it down so we can see what is happening
     // remove transition so just d3.select(".brush") to just draw
     brush(d3.select(".brush").transition());
 
     // now fire the brushstart, brushmove, and brushend events
     // remove transition so just d3.select(".brush") to just draw
-    brush.event(d3.select(".brush").transition().delay(10))
+    brush.event(d3.select(".brush").transition().delay(10));
+    */
+   
+    //brushSel = svg.append('g').call(brush);
+   // console.log(brushSel);
+brush.move(d3.select(".brush"), [startDate.getFullYear(), endDate.getFullYear()]);
+
+console.log(startDate.getFullYear());
+console.log(endDate.getFullYear());
+
+
+    
   }
     
 

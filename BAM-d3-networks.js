@@ -73,7 +73,6 @@ var d3NetworkSvg = d3.select(chartDiv).append("svg")
     .call(zoom)
     .append("g");
 
-var color = d3.scaleOrdinal(d3.schemeCategory20);
 
 var d3NetworkDiv = d3.select("body").append("div")
     .attr("class", "tooltip")
@@ -172,7 +171,7 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
             }
         })
         .attr("fill", function(d) {
-            return color(getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.color));
+            return d3.color(getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.color));
         })
         .attr("title", function(d) {
             return getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.label);
@@ -196,7 +195,7 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
                 .style("top", (d3.event.pageY - 28) + "px")
                 // change the tooltip background to the node color
                 .style("background", function() {
-                    return color(getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.color));
+                    return d3.color(getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.color));
                 });
         })
         .on("mouseout", function(d) {
@@ -235,7 +234,7 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
             for (var groupInfo in nodeGroups) {
                 var tempGroupId = getD3AttributeValueFromConfig(graph.nodes[i], nodeGroups[groupInfo]);
                 nodeGroups[groupInfo][tempGroupId] = {};
-                nodeGroups[groupInfo][tempGroupId].color = color(getD3AttributeValueFromConfig(graph.nodes[i], d3NetworksNodeConfigHolder.programAttributes.color));
+                nodeGroups[groupInfo][tempGroupId].color = d3.color(getD3AttributeValueFromConfig(graph.nodes[i], d3NetworksNodeConfigHolder.programAttributes.color));
             }
         }
 
@@ -275,10 +274,9 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
 
     d3NetworkSvg.selectAll("line").each(function(d2, i) {
         var tableDataHolder = {};
-        //NEED TO MAKE THIS CONFIGURABLE;
-        tableDataHolder.sourceTitle = d2.source.label;
+        tableDataHolder.sourceTitle =  getD3AttributeValueFromConfig(d2.source, d3NetworksNodeConfigHolder.programAttributes.label);
         tableDataHolder.sourceIndex = d2.source.index;
-        tableDataHolder.targetTitle = d2.target.label;
+        tableDataHolder.targetTitle =  getD3AttributeValueFromConfig(d2.target, d3NetworksNodeConfigHolder.programAttributes.label);
         tableDataHolder.targetIndex = d2.target.index;
         d3NetworksConnectionsFullTableHolder.push(tableDataHolder);
     });
@@ -337,8 +335,7 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
     //pulling this out here due to index issue
     for (i = 0; i < graph.nodes.length; i++) {
         var nodeListHolder = [];
-        //NEED TO MAKE THIS CONFIGURABLE
-        nodeListHolder.push(graph.nodes[i].label);
+        nodeListHolder.push(getD3AttributeValueFromConfig(graph.nodes[i], d3NetworksNodeConfigHolder.programAttributes.label));
         nodeListHolder.push(graph.nodes[i].index);
         d3NetworksnodeList.push(nodeListHolder);
     }
@@ -442,8 +439,8 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
         d3NetworkSvg.selectAll("circle").each(function(d, i) {
             if (getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.group) == groupNumber) {
                 var tempGroupStructure = {};
-                tempGroupStructure.memberTitle = d.label;
-                tempGroupStructure.memberType = d.attributes.type;
+                tempGroupStructure.memberTitle =  getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.label);
+                tempGroupStructure.memberType =  getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.type);
                 tempGroupStructure.memberIndex = d.index;
                 groupTableLoader.push(tempGroupStructure);
             }
@@ -460,7 +457,6 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
 
                 if (data.memberIndex == d2.index) {
                     createInfoMasthead(d2, false, bamConfigJson.bamMoreInfoPanel, false);
-
                     makeConnectedNodesTable(d2, d3NetworksConnectionsResultsTable);
                     highlightNodeGroup(activeGroup, d3NetworkSvg, false);
                     zoomToD3Selection(d2);
@@ -483,8 +479,20 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
 
     //sets up and displays the results section (generally the right) when a node is selected
     function createInfoMasthead(d, prop, domLocation, connectedToggle) {
+    
+            //set html in side panel
+        var headlineHtml = '';
 
-        activeNode = d;
+
+        if (d3NetworksNodeConfigHolder.moreInformationDisplayAttributes) {
+            resultsPanelHtmlMaker(d, d3NetworksNodeConfigHolder.moreInformationDisplayAttributes, domLocation.nodeInfoID);
+        }
+
+        if (d3NetworksNodeConfigHolder.networkStatisticsDisplayAttributes) {
+            resultsPanelHtmlMaker(d, d3NetworksNodeConfigHolder.networkStatisticsDisplayAttributes, domLocation.networkInfoID);
+        }
+
+
         activeGroup = getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.group);
         //run the group creator as well
         populateGroupResultsTable(d);
@@ -496,8 +504,6 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
             // the stop is necessary - see http://stackoverflow.com/questions/22941796/attaching-onclick-event-to-d3-chart-background  
             d3.event.stopPropagation();
         }
-        //set html in side panel
-        var headlineHtml = '';
 
         if (getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.image)) {
             headlineHtml = headlineHtml + '<img src="' + getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.programAttributes.image) + '" class="right-title-image" alt="nodeImage">';
@@ -516,19 +522,16 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
             headlineHtml = headlineHtml + '<br/>';
         }
         $('#' + domLocation.headlineID).html(headlineHtml);
+        
+        
+        
 
-        if (d3NetworksNodeConfigHolder.moreInformationDisplayAttributes) {
-            resultsPanelHtmlMaker(d, d3NetworksNodeConfigHolder.moreInformationDisplayAttributes, domLocation.nodeInfoID);
-        }
-
-        if (d3NetworksNodeConfigHolder.networkStatisticsDisplayAttributes) {
-            resultsPanelHtmlMaker(d, d3NetworksNodeConfigHolder.networkStatisticsDisplayAttributes, domLocation.networkInfoID);
-        }
     }
 
     function connectedNodeListMaker(dictionary, node) {
         var tempLinkStructure = {};
-        tempLinkStructure.connectionTitle = node.label;
+        //tempLinkStructure.connectionTitle = node.label;
+        tempLinkStructure.connectionTitle =  getD3AttributeValueFromConfig(node, d3NetworksNodeConfigHolder.programAttributes.label);
         tempLinkStructure.connectionIndex = node.index;
         dictionary.push(tempLinkStructure);
     }
@@ -567,9 +570,8 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
                 if (neighboring(d, o) == 1 || neighboring(o, d) == 1) {
                     // we do not want to list a self-connection
                     if (o != d) {
-                        //NEED TO MAKE THIS CONFIGURABLE!!!
                         var connectedListHolder = [];
-                        connectedListHolder.push(o.attributes.name);
+                        connectedListHolder.push(getD3AttributeValueFromConfig(o, d3NetworksNodeConfigHolder.programAttributes.label));
                         connectedListHolder.push(o.index);
                         connectedList.push(connectedListHolder);
                     }
@@ -731,6 +733,7 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
         for (var i = 0; i < data.length; i++) {
         if (typeof(getD3AttributeValueFromConfig(d, data[i])) !== 'undefined') {
             attributesHtml = attributesHtml + '<br />';
+            //the title assigned to the attribute through the config file
             attributesHtml = attributesHtml + data[i].attributeTitle;
             attributesHtml = attributesHtml + getD3AttributeValueFromConfig(d, data[i]);
             }

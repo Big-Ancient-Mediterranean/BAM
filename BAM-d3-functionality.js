@@ -12,6 +12,8 @@
 
             //Toggle stores whether the highlighting is on
             var toggle = 0;
+            //this has the state of the display - is it network or geographic? Choices are map and sim
+            var positioning = 'map';
 
             // Extract the width and height that was computed by CSS.
             var chartDiv = document.getElementById("map");
@@ -28,27 +30,27 @@
             //after the map has been loaded, now load the d3js data and interact with our map
             d3.json(bamConfigJson.bamMainDataLocation, function(error, graph) {
                 if (error) throw error;
-                if (bamConfigJson.bamSourceDataType.toLowerCase() == 'geojson')
+                if (bamConfigJson.bamD3Config.sourceDataType.toLowerCase() == 'geojson')
                 {
                 	bamNodeRoot = 'features';
                 	bamPropertyRoot = 'properties';
                 }
                 
-                if (bamConfigJson.bamSourceDataType.toLowerCase() == 'gephi')
+                if (bamConfigJson.bamD3Config.sourceDataType.toLowerCase() == 'gephi')
                 {
                 	bamNodeRoot = 'nodes';
                 	bamPropertyRoot = 'attributes';
                 }
                 
-                if (bamConfigJson.bamSourceDataType.toLowerCase() == "gephi") {
+                if (bamConfigJson.bamD3Config.sourceDataType.toLowerCase() == "gephi") {
                     //links are the lines connecting our nodes
                     var link = svg.append("g")
-                        .attr("class", bamConfigJson.bamLinkElement)
+                        .attr("class", bamConfigJson.bamD3Config.linksConfig.element)
                         .selectAll("line")
                         .data(graph.edges)
                         .enter().append("line")
                         .attr("stroke-width", function(d) {
-                            return bamConfigJson.bamStrokeWidth;
+                            return bamConfigJson.bamD3Config.linksConfig.strokeWidth;
                         });
 
 }
@@ -60,21 +62,24 @@
                     .enter().append("circle")
                     .attr("r", function(d) {
                     	//check if there is a size attribute for the nodes. If not, default to minimum size
-                    	if (typeof(d[bamPropertyRoot][bamConfigJson.bamdataSizeAttribute]) !== 'undefined')
+                    	if (typeof(d[bamConfigJson.bamD3Config.nodesConfig.programAttributes.size.attribute]) !== 'undefined')
 						{
-                        var sizer = d[bamPropertyRoot][bamConfigJson.bamdataSizeAttribute] / bamConfigJson.bamSizeDivider;
-                        if (sizer < bamConfigJson.bamNodeMinSize) {
-                            return bamConfigJson.bamNodeMinSize;
-                        }
-                        if (sizer > bamConfigJson.bamNodeMaxSize) {
-                            return bamConfigJson.bamNodeMaxSize;
-                        } else {
+                        	var sizer = d[bamConfigJson.bamD3Config.nodesConfig.programAttributes.size.attribute] / bamConfigJson.bamD3Config.nodesConfig.nodeSizeDivider;
+                        	if (sizer < bamConfigJson.bamD3Config.nodesConfig.nodeMinSize) 
+                        	{
+                            	return bamConfigJson.bamD3Config.nodesConfig.nodeMinSize;
+                        	}
+                        	if (sizer > bamConfigJson.bamD3Config.nodesConfig.nodeMaxSize) 
+                        	{
+                            	return bamConfigJson.bamD3Config.nodesConfig.nodeMaxSize;
+                        	} else 
+                        	{
                             return sizer;
-                        }
+                       		 }
                         }
                         else
                         {
-                        	return bamConfigJson.bamNodeMinSize;
+                        	return bamConfigJson.bamD3Config.nodesConfig.nodeMinSize;
                         }
                     })
                     .attr("fill", function(d) {
@@ -93,11 +98,15 @@
                         var titleHtml = '<center><b>' + d[bamPropertyRoot][bamConfigJson.bamToolTipTitle] + '</b></center>';
                         var attributesHtml = '<br />';
 
-                        for (i = 0; i < bamConfigJson.bamToolTipAttributes.length; i++) {
-                            attributesHtml = attributesHtml + bamConfigJson.bamToolTipAttributes[i];
-                            attributesHtml = attributesHtml + ': ' + d[bamPropertyRoot][bamConfigJson.bamToolTipAttributes[i]];
+                     /*   for (i = 0; i < bamConfigJson.bamD3Config.nodesConfig.toolTipAttributes.length; i++) {
+                            attributesHtml = attributesHtml + bamConfigJson.bamD3Config.nodesConfig.toolTipAttributes[i];
+                            attributesHtml = attributesHtml + ': ' + d[bamPropertyRoot][bamConfigJson.bamD3Config.nodesConfig.toolTipAttributes[i]];
                             attributesHtml = attributesHtml + '<br />';
-                        }
+                        }*/
+                        
+                        //custom attributes for BLT until I can break this out as a separate function with different things you can do to them
+						attributesHtml = attributesHtml + 'Time in archive: ' + d.attributes['Weighted In-Degree'];
+
 
                         //now to iterate through the array of attributes desired in the tooltip
                         div.html(titleHtml + attributesHtml)
@@ -121,7 +130,7 @@
                         return d[bamPropertyRoot][bamConfigJson.bamToolTipTitle];
                     });
 
-                if (bamConfigJson.bamSourceDataType.toLowerCase() == "gephi") {
+                if (bamConfigJson.bamD3Config.sourceDataType.toLowerCase() == "gephi") {
 
                     // this code highlights only the nodes that are connected to the nide that is clicked
                     //Create an array logging what is connected to what
@@ -141,7 +150,7 @@
                             return d.id;
                         }))
                         .force("collide", d3.forceCollide(function(d) {
-                            return d.attributes[bamConfigJson.bamdataSizeAttribute];
+                            return d.attributes[bamConfigJson.bamD3Config.nodesConfig.nodeMaxSize];
                         }).iterations(2))
                         .force("charge", d3.forceManyBody().strength(-10).distanceMax(300))
                         .force("center", d3.forceCenter(width / 2, height / 2))
@@ -182,10 +191,12 @@
 
                 // the ticked function
                 function ticked() {
+                if (positioning === 'map'){
                     node.attr("transform",
                         function(d) {
+                        console.log(d);
                             //  if (d.fixed == true) {
-                            var tempLatLng = new L.LatLng(d.attributes[bamConfigJson.bamLatAttribute], d.attributes[bamConfigJson.bamLonAttribute]);
+                            var tempLatLng = new L.LatLng(d.attributes.lat, d.attributes.long);
                             d.x = map.latLngToLayerPoint(tempLatLng).x;
                             d.y = map.latLngToLayerPoint(tempLatLng).y;
                             return "translate(" +
@@ -194,7 +205,16 @@
                             //  }
                         }
                     );
+}
+/*
+       else{
+                	        node
+            .attr('cx', function (d) { return d.x })
+            .attr('cy', function (d) { return d.y });
+                        simulation.alpha(1).restart();
 
+
+                } */
                     link
                         .attr("x1", function(d) {
                             return d.source.x;
@@ -251,6 +271,18 @@
                     d.fx = null;
                     d.fy = null;
                 }
+                
+                //from the map file, due to simulation variable moving back and forth
+                $( "#visToggle" ).click(function() {
+                
+                if (positioning === 'map') {
+        } else {
+           // fixed()
+        }
+
+
+});
+
 
                 //end of the d3js block      
             });

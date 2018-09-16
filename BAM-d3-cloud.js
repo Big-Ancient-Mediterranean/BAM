@@ -30,21 +30,26 @@ function drawWordCloud() {
 //actually, make this a drop down of possibilites. Default to In-degree
 //the possibilities are a config file, so we can leave out ones if we want
 
-var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(error, graph) {
+var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.cloudData, function(error, graph) {
 
 //load the nodes
 
 
+console.log(d3NetworksNodeConfigHolder.cloudAttributes);
 //d3NetworksNodeConfigHolder.cloudAttributes
 
     for (var i = 0; i < graph.nodes.length; i++) {
-        sortable.push([graph.nodes[i].label, (parseInt(graph.nodes[i].attributes['In-Degree']) * 10)]);
+    	var title = getD3AttributeValueFromConfig(graph.nodes[i], d3NetworksNodeConfigHolder.programAttributes.label);
+    	//need to ge the attribute determined by the config file
+    	//getD3AttributeValueFromConfig(d, d3NetworksNodeConfigHolder.toolTipTitle)
+        sortable.push([title, parseFloat((getD3AttributeValueFromConfig(graph.nodes[i], d3NetworksNodeConfigHolder.programAttributes.cloudSizeAttribute)))]);
     }
 
     sortable.sort(function(a, b) {
         return b[1] - a[1];
     });
     
+    console.log(sortable);
     
 	//+1 due to the numbering of arrays
     var finalTextArray = sortable.slice(0, (d3NetworksNodeConfigHolder.cloudCount + 1));
@@ -61,7 +66,7 @@ var d3NetworksGraph = d3.json(bamConfigJson.bamD3Config.sourceData, function(err
         .domain([0, d3.max(word_entries, function(d) {
             return d.value;
         })])
-        .range([1, 200]);
+        .range([d3NetworksNodeConfigHolder.cloudMinText, d3NetworksNodeConfigHolder.cloudMaxText]);
 
     d3.layout.cloud().size([width, height])
         //MAKECONFIG

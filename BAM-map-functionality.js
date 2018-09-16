@@ -29,6 +29,9 @@
                 states: [{
                     stateName: 'get-center',
                     onClick: function(button, map) {
+                    console.log(map.getCenter());
+                                        console.log(map.getZoom());
+
                         //fires our function
                         setInitialMapState(map, bamConfigJson.bamMapConfig.MapSetViewX, bamConfigJson.bamMapConfig.MapSetViewY, bamConfigJson.bamMapConfig.MapSetViewZoom);
                     },
@@ -42,6 +45,33 @@
                 position: 'topright',
                 elementsToHide: 'a,button,span'
             }).addTo(map);
+            
+         /*               //this button restores the map to the original zoom.
+            L.easyButton({
+                id: 'visToggle',
+                position: 'topright',
+                type: 'replace',
+                leafletClasses: true,
+                states: [{
+                    stateName: 'get-center',
+                    onClick: function(button, map) {
+                    
+                      if (positioning === 'map') {
+            positioning = 'sim';
+            bamMapBaseLayer.setOpacity(0);
+        } else {
+            positioning = 'map';
+bamMapBaseLayer.setOpacity(1);
+    //        simulation.stop()
+  //          fixed()
+        }
+                    },
+                    title: 'Toggles Network and Map Views',
+                    icon: '<span class="restoreZoom">&curren;</span>'
+                }]
+            }).addTo(map);
+*/
+
 
             //a map without a scale is unthinkable!                
             L.control.scale({
